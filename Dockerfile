@@ -15,11 +15,20 @@ RUN apt-get -y update && \
     zlib1g-dev libicu-dev libpango1.0-dev libcairo2-dev libfontconfig1-dev libgettextpo-dev libnss3-dev \
     wget cabextract xfonts-utils perl automake autoconf-archive libcurl4-gnutls-dev unzip libgcj14 \
     libfile-find-rule-perl libfile-find-rule-perl-perl imagemagick gettext unpaper libtiff5 libpng12-0 \
-    libjpeg-turbo8 libpango1.0-0 libcairo2 fontconfig libwebp5 libfontconfig1 libgettextpo0 pkg-config gcc gcj-jdk \
+    libjpeg-turbo8 libpango1.0-0 libcairo2 fontconfig libwebp5 libfontconfig1 libgettextpo0 pkg-config gcc gcj-jdk  \
     rsyslog libsys-syslog-perl && \
+    apt-get update -y && \
+    apt-get upgrade -y && \
+    apt-get dist-upgrade -y && \
+    apt-get install build-essential software-properties-common -y && \
+    add-apt-repository ppa:ubuntu-toolchain-r/test -y && \
+    apt-get update -y && \
+    apt-get install gcc-7 g++-7 -y && \
+    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 60 --slave /usr/bin/g++ g++ /usr/bin/g++-7 && \
+    update-alternatives --config gcc && \
     apt-get -y clean all
 
-RUN wget -O mscorefonts.deb http://ftp.us.debian.org/debian/pool/contrib/m/msttcorefonts/ttf-mscorefonts-installer_3.4+nmu1_all.deb && \
+RUN wget -O mscorefonts.deb http://ftp.us.debian.org/debian/pool/contrib/m/msttcorefonts/ttf-mscorefonts-installer_3.6_all.deb && \
     dpkg -i mscorefonts.deb && \
     rm mscorefonts.deb
 
@@ -34,7 +43,7 @@ RUN perl -MCPAN -e 'install IO::Select;'
 # Tesseract-ocr 3.05, com dicionários inglês e português
 # Bibliotecas para o Tesseract: Leptonica
 RUN git clone https://github.com/DanBloomberg/leptonica.git && \
-    cd leptonica && ./autobuild && ./configure && make all install && \
+    cd leptonica && ./autogen.sh && ./configure && make all install && \
     rm -rf ../leptonica
 
 # Bibliotecas para o Tesseract: Libav
@@ -53,8 +62,9 @@ RUN wget https://github.com/tesseract-ocr/tessdata/blob/master/eng.traineddata?r
     wget https://github.com/tesseract-ocr/tessdata/blob/master/osd.traineddata?raw=true -O /usr/local/share/tessdata/osd.traineddata
 
 # Poppler 0.56
-RUN git clone -b poppler-0.56 https://anongit.freedesktop.org/git/poppler/poppler.git && \
-    cd poppler && ./autogen.sh && ./configure --enable-cmyk --enable-libcurl && make  all install  && \
+#RUN git clone -b poppler-0.56 https://anongit.freedesktop.org/git/poppler/poppler.git && \
+    COPY ./poppler ./poppler
+    RUN cd poppler && ./autogen.sh && ./configure --enable-cmyk --enable-libcurl && make  all install  && \
     rm -rf ../poppler
 
 # pdftk, versão 2.02 ou superior
