@@ -62,9 +62,8 @@ RUN wget https://github.com/tesseract-ocr/tessdata/blob/master/eng.traineddata?r
     wget https://github.com/tesseract-ocr/tessdata/blob/master/osd.traineddata?raw=true -O /usr/local/share/tessdata/osd.traineddata
 
 # Poppler 0.56
-#RUN git clone -b poppler-0.56 https://anongit.freedesktop.org/git/poppler/poppler.git && \
-    COPY ./poppler ./poppler
-    RUN cd poppler && ./autogen.sh && ./configure --enable-cmyk --enable-libcurl && make  all install  && \
+RUN git clone -b poppler-0.56 http://anongit.freedesktop.org/git/poppler/poppler.git && \
+    cd poppler && ./autogen.sh && ./configure --enable-cmyk --enable-libcurl && make  all install  && \
     rm -rf ../poppler
 
 # pdftk, versão 2.02 ou superior
