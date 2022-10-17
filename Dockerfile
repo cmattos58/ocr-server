@@ -17,15 +17,15 @@ RUN apt-get -y update && \
     libfile-find-rule-perl libfile-find-rule-perl-perl imagemagick gettext unpaper libtiff5 libpng12-0 \
     libjpeg-turbo8 libpango1.0-0 libcairo2 fontconfig libwebp5 libfontconfig1 libgettextpo0 pkg-config gcc gcj-jdk  \
     rsyslog libsys-syslog-perl && \
-    apt-get update -y && \
-    apt-get upgrade -y && \
-    apt-get dist-upgrade -y && \
-    apt-get install build-essential software-properties-common -y && \
-    add-apt-repository ppa:ubuntu-toolchain-r/test -y && \
-    apt-get update -y && \
-    apt-get install gcc-7 g++-7 -y && \
-    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 60 --slave /usr/bin/g++ g++ /usr/bin/g++-7 && \
-    update-alternatives --config gcc && \
+#   apt-get update -y && \
+#   apt-get upgrade -y && \
+#   apt-get dist-upgrade -y && \
+#   apt-get install build-essential software-properties-common -y && \
+#   add-apt-repository ppa:ubuntu-toolchain-r/test -y && \
+#   apt-get update -y && \
+#   apt-get install gcc-7 g++-7 -y && \
+#   update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 60 --slave /usr/bin/g++ g++ /usr/bin/g++-7 && \
+#   update-alternatives --config gcc && \
     apt-get -y clean all
 
 RUN wget -O mscorefonts.deb http://ftp.us.debian.org/debian/pool/contrib/m/msttcorefonts/ttf-mscorefonts-installer_3.6_all.deb && \
@@ -39,6 +39,26 @@ RUN perl -MCPAN -e 'install File::Touch;'
 RUN perl -MCPAN -e 'install Sys::Syslog;'
 RUN perl -MCPAN -e 'install IPC::Open3;'
 RUN perl -MCPAN -e 'install IO::Select;'
+
+
+# pdftk, versão 2.02 ou superior
+RUN wget https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/pdftk-2.02-src.zip && \
+    unzip pdftk-2.02-src.zip && rm -f pdftk-2.02-src.zip && \
+    cd pdftk-2.02-dist/pdftk && make -f Makefile.Redhat all install && \
+    rm -rf ../pdftk-2.02-dist
+
+
+RUN apt-get update -y && \
+    apt-get upgrade -y && \
+    apt-get dist-upgrade -y && \
+    apt-get install build-essential software-properties-common -y && \
+    add-apt-repository ppa:ubuntu-toolchain-r/test -y && \
+    apt-get update -y && \
+    apt-get install gcc-7 g++-7 -y && \
+    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 60 --slave /usr/bin/g++ g++ /usr/bin/g++-7 && \
+    update-alternatives --config gcc && \
+    apt-get -y clean all
+
 
 # Tesseract-ocr 3.05, com dicionários inglês e português
 # Bibliotecas para o Tesseract: Leptonica
@@ -66,14 +86,11 @@ RUN git clone -b poppler-0.56 http://anongit.freedesktop.org/git/poppler/poppler
     cd poppler && ./autogen.sh && ./configure --enable-cmyk --enable-libcurl && make  all install  && \
     rm -rf ../poppler
 
-# pdftk, versão 2.02 ou superior
-RUN wget https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/pdftk-2.02-src.zip && \
-    unzip pdftk-2.02-src.zip && rm -f pdftk-2.02-src.zip && \
-    cd pdftk-2.02-dist/pdftk && make -f Makefile.Redhat all install && \
-    rm -rf ../pdftk-2.02-dist
 
 # Ghostscript 9.18 ou superior
-RUN wget http://downloads.ghostscript.com/public/old-gs-releases/ghostscript-9.18.tar.gz && \
+#RUN wget http://downloads.ghostscript.com/public/old-gs-releases/ghostscript-9.18.tar.gz && \
+RUN wget --no-check-certificate http://sourceforge.net/projects/portableapps/files/Source/Ghostscript/ghostscript-9.18.tar.gz/download && \
+    mv download ghostscript-9.18.tar.gz && \
     tar xvozf ghostscript-9.18.tar.gz && rm -f ghostscript-9.18.tar.gz && \
     cd ghostscript-9.18 && ls && ./autogen.sh; ./configure && make all install && \
     rm -rf ../ghostscript-9.18
